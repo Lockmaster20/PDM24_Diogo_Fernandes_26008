@@ -29,9 +29,64 @@ class MainActivity : ComponentActivity() {
 fun Keyboard() {
     Column {
         Row {
+            Text("1")
+        }
+        Row {
             // onClick = { test("Hello") }
             Button(onClick = {}) {
+                Text("7")
+            }
+            Button(onClick = {}) {
+                Text("8")
+            }
+            Button(onClick = {}) {
+                Text("9")
+            }
+            Button(onClick = {}) {
+                Text("÷")
+            }
+        }
+        Row {
+            // onClick = { test("Hello") }
+            Button(onClick = {}) {
+                Text("4")
+            }
+            Button(onClick = {}) {
+                Text("5")
+            }
+            Button(onClick = {}) {
+                Text("6")
+            }
+            Button(onClick = {}) {
+                Text("×")
+            }
+        }
+        Row {
+            Button(onClick = {}) {
+                Text("1")
+            }
+            Button(onClick = {}) {
+                Text("2")
+            }
+            Button(onClick = {}) {
+                Text("3")
+            }
+            Button(onClick = {}) {
+                Text("-")
+            }
+        }
+        Row {
+            Button(onClick = {}) {
                 Text("0")
+            }
+            Button(onClick = {}) {
+                Text(".")
+            }
+            Button(onClick = {}) {
+                Text("=")
+            }
+            Button(onClick = {}) {
+                Text("+")
             }
         }
     }
