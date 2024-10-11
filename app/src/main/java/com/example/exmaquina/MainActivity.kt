@@ -12,6 +12,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.exmaquina.ui.theme.ExMaquinaTheme
@@ -21,33 +25,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            Keyboard()
         }
     }
 }
 
 @Composable
 fun Keyboard() {
+
+    var tst by remember { mutableStateOf(0) }
+
     Column {
         Row {
-            Text("1")
+            Text(text = tst.toString())
         }
+        //BtnRow(listOf(("7", ::Number(7)); ("7", ::Number(7)), ("7", ::Number(7)), ("7", ::Number(7))))
+        //BtnRow("7", ::Number(7))
+        /*
         Row {
-            // onClick = { test("Hello") }
-            Button(onClick = {}) {
-                Text("7")
-            }
-            Button(onClick = {}) {
-                Text("8")
-            }
-            Button(onClick = {}) {
-                Text("9")
-            }
-            Button(onClick = {}) {
-                Text("÷")
-            }
-        }
-        Row {
-            // onClick = { test("Hello") }
             Button(onClick = {}) {
                 Text("4")
             }
@@ -89,7 +84,12 @@ fun Keyboard() {
                 Text("+")
             }
         }
+        */
     }
+}
+
+fun Number(num: Int){
+
 }
 
 @Preview(showBackground = true)
