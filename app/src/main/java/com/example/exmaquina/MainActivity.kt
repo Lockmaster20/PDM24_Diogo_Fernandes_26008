@@ -75,6 +75,18 @@ fun First() {
                 memory = "0"
                 display = Calculate(0.0, display.toDouble(), value).toString()
             }
+            "±" -> {
+                display = (-display.toDouble()).toString()
+            }
+            "MRC" -> {
+                display = memory
+            }
+            "M-" -> {
+                memory = (memory.toDouble() - display.toDouble()).toString()
+            }
+            "M+" -> {
+                memory = (memory.toDouble() + display.toDouble()).toString()
+            }
             else -> {
                 var join = "0"
                 if(display == "0"){
