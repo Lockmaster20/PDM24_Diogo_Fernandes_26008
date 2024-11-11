@@ -1,4 +1,4 @@
-package com.example.exmaquina
+package com.example.pdmdiogo
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

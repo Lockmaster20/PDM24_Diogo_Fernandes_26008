@@ -1,4 +1,4 @@
-package com.example.exmaquina.ui
+package com.example.pdmdiogo.Calculator.ui
 
 import androidx.compose.runtime.Composable
 

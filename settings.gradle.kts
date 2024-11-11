@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ExMaquina"
+rootProject.name = "PDM Diogo"
 include(":app")
  

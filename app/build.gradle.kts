@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.exmaquina"
+    namespace = "com.example.pdmdiogo"
     compileSdk = 34
 
     defaultConfig {

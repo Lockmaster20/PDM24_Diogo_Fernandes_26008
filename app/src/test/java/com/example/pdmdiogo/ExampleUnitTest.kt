@@ -1,4 +1,4 @@
-package com.example.exmaquina
+package com.example.pdmdiogo
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.exmaquina.ui.theme
+package com.example.pdmdiogo.Calculator.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,6 +1,5 @@
-package com.example.exmaquina.ui.theme
+package com.example.pdmdiogo.Calculator.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
