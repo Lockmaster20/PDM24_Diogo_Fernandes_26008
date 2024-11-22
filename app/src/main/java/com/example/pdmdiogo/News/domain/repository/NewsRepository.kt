@@ -1,9 +1,7 @@
 package com.example.pdmdiogo.News.domain.repository
 
-import com.example.pdmdiogo.News.domain.model.Coin
-import com.example.pdmdiogo.News.domain.model.CoinDetail
+import com.example.pdmdiogo.News.domain.model.News
 
-interface CoinRepository {
-    suspend fun getCoins(): List<Coin>
-    suspend fun getCoinDetail (coinId: String): CoinDetail
+interface NewsRepository {
+    suspend fun getTopHeadlines(apiKey: String): List<News>
 }

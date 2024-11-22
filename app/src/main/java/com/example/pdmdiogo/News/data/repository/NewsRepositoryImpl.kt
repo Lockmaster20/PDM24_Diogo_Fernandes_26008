@@ -1,15 +1,11 @@
 package com.example.pdmdiogo.News.data.repository
 
-import com.example.pdmdiogo.News.data.remote.api.CoinPaprikaApi
-import com.example.pdmdiogo.News.domain.model.Coin
-import com.example.pdmdiogo.News.domain.model.CoinDetail
-import com.example.pdmdiogo.News.domain.repository.CoinRepository
+import com.example.pdmdiogo.News.data.remote.api.NewsApi
+import com.example.pdmdiogo.News.domain.model.News
+import com.example.pdmdiogo.News.domain.repository.NewsRepository
 
-class CoinRepositoryImpl(private val api: CoinPaprikaApi): CoinRepository {
-    override suspend fun getCoins(): List<Coin> {
-        return api.getCoins().map {it.toCoin() }
-    }
-    override suspend fun getCoinDetail(coinId: String): CoinDetail {
-        return api.getCoinDetail(coinId).toCoinDetail()
+class NewsRepositoryImpl(private val api: NewsApi) : NewsRepository {
+    override suspend fun getTopHeadlines(apiKey: String): List<News> {
+        return api.getTopHeadlines(apiKey = apiKey).map {it.toNews() }
     }
 }

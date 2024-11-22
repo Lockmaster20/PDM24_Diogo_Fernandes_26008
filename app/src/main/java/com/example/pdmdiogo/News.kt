@@ -13,14 +13,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pdmdiogo.News.presentation.news_list.CoinListViewModel
+//import com.example.pdmdiogo.News.presentation.news_list.CoinListViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.pdmdiogo.News.domain.model.Coin
+//import com.example.pdmdiogo.News.domain.model.Coin
 import androidx.compose.runtime.LaunchedEffect
+import com.example.pdmdiogo.News.presentation.news_list.NewsListViewModel
 
-
+/*
 @Composable
 fun MainScreen() {
     var selectedCoinId by remember { mutableStateOf<String?>(null) }
@@ -30,8 +31,15 @@ fun MainScreen() {
         selectedCoinId = coinId
     }
 }
+ */
 
+@Composable
+fun MainScreen() {
+    val newsListViewModel: NewsListViewModel = viewModel()
+    //NewsListScreen
+}
 
+/*
 @Composable
 fun CoinListScreen(
     viewModel: CoinListViewModel, // ViewModel instance
@@ -74,3 +82,4 @@ fun CoinItem(
         )
     }
 }
+*/

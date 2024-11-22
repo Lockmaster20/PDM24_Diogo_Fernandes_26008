@@ -1,13 +1,16 @@
 package com.example.pdmdiogo.News.data.remote.model
 
-import com.example.pdmdiogo.News.domain.model.Coin
+import com.example.pdmdiogo.News.domain.model.News
 
-data class CoinDto(
-    val id: String,
-    val name: String,
-    val symbol: String
+data class NewsDto(
+    val title: String,
+    val description: String?,
+    val content: String?
 ) {
-    fun toCoin(): Coin {
-        return Coin(id = id, name = name, symbol = symbol)
+    fun toNews(): News {
+        return News(
+            title = title,
+            description = description ?: "No description." ,
+            content = content ?: "No content.")
     }
 }

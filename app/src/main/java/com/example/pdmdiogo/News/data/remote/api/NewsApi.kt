@@ -1,25 +1,27 @@
 package com.example.pdmdiogo.News.data.remote.api
 
-import com.example.pdmdiogo.News.data.remote.model.CoinDetailDto
-import com.example.pdmdiogo.News.data.remote.model.CoinDto
+import com.example.pdmdiogo.News.data.remote.model.NewsDto
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 object RetrofitInstance {
-    val api: CoinPaprikaApi by lazy {
+    val api: NewsApi by lazy {
         Retrofit.Builder()
-            .baseUrl("https://api.coinpaprika.com/")
-            .addConverterFactory (GsonConverterFactory.create())
+            .baseUrl("https://newsapi.org/")
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(CoinPaprikaApi::class.java)
+            .create(NewsApi::class.java)
     }
 }
 
-interface CoinPaprikaApi {
-    @GET("v1/coins")
-    suspend fun getCoins(): List<CoinDto>
-    @GET("v1/coins/{id}")
-    suspend fun getCoinDetail(@Path("id") coinId: String): CoinDetailDto
+
+interface NewsApi {
+    @GET("v2/top-headlines")
+    suspend fun getTopHeadlines(
+        @Query("country") country: String = "us",
+        @Query("apiKey") apiKey: String
+    ): List<NewsDto>
 }
