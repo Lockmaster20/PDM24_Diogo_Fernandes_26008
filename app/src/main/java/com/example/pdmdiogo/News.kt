@@ -1,6 +1,9 @@
 package com.example.pdmdiogo
 
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 //import com.example.pdmdiogo.News.domain.model.Coin
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -63,12 +71,16 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
     val newsList = viewModel.news.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Top News")
+        Text(text = "Top News",
+            fontWeight = FontWeight.Bold,
+            fontSize = 30.sp)
+        Divider(
+            color = Color.Gray,
+            thickness = 1.dp
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("a")
         newsList.value.forEach { article ->
-            Text("b")
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -77,26 +89,31 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
                         val articleJson = Uri.encode(Gson().toJson(article))
                         navController.navigate("detail/$articleJson")
                     },
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                border = BorderStroke(2.dp, Color.Gray)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(article.title)
+                    Text(article.title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp)
                     Text(article.description)
                 }
             }
         }
-        Text("c")
     }
 }
 
 @Composable
 fun NewsDetailScreen(article: News) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Details")
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Title: ${article.title}")
+        Text(text = article.title,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp)
+        Divider(
+            color = Color.Gray,
+            thickness = 1.dp
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Description: ${article.description}")
+        Text(article.description)
         Spacer(modifier = Modifier.height(16.dp))
     }
 }

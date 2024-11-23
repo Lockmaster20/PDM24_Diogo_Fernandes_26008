@@ -14,3 +14,7 @@ data class NewsDto(
             content = content ?: "No content.")
     }
 }
+
+data class NewsApiResponse(
+    val articles: List<NewsDto>
+)

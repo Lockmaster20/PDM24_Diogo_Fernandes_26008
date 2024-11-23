@@ -1,5 +1,6 @@
 package com.example.pdmdiogo.News.data.remote.api
 
+import com.example.pdmdiogo.News.data.remote.model.NewsApiResponse
 import com.example.pdmdiogo.News.data.remote.model.NewsDto
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -21,5 +22,5 @@ interface NewsApi {
     suspend fun getTopHeadlines(
         @Query("country") country: String = "us",
         @Query("apiKey") apiKey: String
-    ): List<NewsDto>
+    ): NewsApiResponse
 }
