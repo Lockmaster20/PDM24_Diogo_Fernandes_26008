@@ -16,8 +16,6 @@ object RetrofitInstance {
             .create(NewsApi::class.java)
     }
 }
-
-
 interface NewsApi {
     @GET("v2/top-headlines")
     suspend fun getTopHeadlines(

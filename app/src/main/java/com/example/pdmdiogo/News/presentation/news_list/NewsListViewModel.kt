@@ -15,7 +15,7 @@ class NewsListViewModel: ViewModel() {
     private val repository = NewsRepositoryImpl(api)
     private val getNewsUseCase = GetNewsUseCase(repository)
 
-    val news = MutableStateFlow<List<News>> (emptyList())
+    val news = MutableStateFlow<List<News>>(emptyList())
 
     fun fetchNews (apiKey: String) {
         viewModelScope.launch{

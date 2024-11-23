@@ -1,11 +1,19 @@
 package com.example.pdmdiogo
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,67 +27,76 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 //import com.example.pdmdiogo.News.domain.model.Coin
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.pdmdiogo.News.domain.model.News
 import com.example.pdmdiogo.News.presentation.news_list.NewsListViewModel
-
-/*
-@Composable
-fun MainScreen() {
-    var selectedCoinId by remember { mutableStateOf<String?>(null) }
-
-    val coinListViewModel: CoinListViewModel = viewModel()
-    CoinListScreen(coinListViewModel) { coinId ->
-        selectedCoinId = coinId
-    }
-}
- */
+import com.google.gson.Gson
 
 @Composable
 fun MainScreen() {
+    val navController = rememberNavController()
     val newsListViewModel: NewsListViewModel = viewModel()
-    //NewsListScreen
-}
 
-/*
-@Composable
-fun CoinListScreen(
-    viewModel: CoinListViewModel, // ViewModel instance
-    onCoinSelected: (String) -> Unit // Callback when a coin is selected
-) {
-    // Collect the state of the coins list
-    val coins by viewModel.coins.collectAsState()
+    newsListViewModel.fetchNews(apiKey = "66af62a8906f4bbbbc4c2baeda1799c4")
 
-    // Fetch the coins when the screen loads
-    LaunchedEffect(Unit) {
-        viewModel.fetchCoins()
-    }
-
-    // Display the list
-    LazyColumn {
-        items(coins) { coin ->
-            // Define how each coin item looks
-            CoinItem(
-                coin = coin,
-                onClick = { onCoinSelected(coin.id) }
-            )
+    NavHost(navController = navController, startDestination = "list") {
+        composable("list") {
+            NewsListScreen(navController, newsListViewModel)
+        }
+        composable("detail/{article}"){ backStackEntry ->
+            val articleJson = backStackEntry.arguments?.getString("article")
+            if (articleJson != null) {
+                val article = Gson().fromJson(articleJson, News::class.java)
+                NewsDetailScreen(article)
+            }
         }
     }
 }
 
 @Composable
-fun CoinItem(
-    coin: Coin, // The coin item to display
-    onClick: () -> Unit // Callback when the item is clicked
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp)
-    ) {
-        Text(
-            text = coin.name, // Assuming the Coin object has a 'name' property
-            modifier = Modifier.weight(1f)
-        )
+fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
+    val newsList = viewModel.news.collectAsState()
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text("Top News")
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("a")
+        newsList.value.forEach { article ->
+            Text("b")
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .clickable {
+                        val articleJson = Uri.encode(Gson().toJson(article))
+                        navController.navigate("detail/$articleJson")
+                    },
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(article.title)
+                    Text(article.description)
+                }
+            }
+        }
+        Text("c")
     }
 }
-*/
+
+@Composable
+fun NewsDetailScreen(article: News) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text("Details")
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Title: ${article.title}")
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("Description: ${article.description}")
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
