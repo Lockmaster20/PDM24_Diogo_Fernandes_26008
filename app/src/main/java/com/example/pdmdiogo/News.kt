@@ -73,6 +73,7 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = "Top News",
             fontWeight = FontWeight.Bold,
+            color = Color.White,
             fontSize = 30.sp)
         Divider(
             color = Color.Gray,
@@ -80,24 +81,52 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        newsList.value.forEach { article ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clickable {
-                        val articleJson = Uri.encode(Gson().toJson(article))
-                        navController.navigate("detail/$articleJson")
-                    },
-                border = BorderStroke(2.dp, Color.Gray)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(article.title,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp)
-                    Text(article.description)
+        LazyColumn {
+            items(newsList.value) { article ->
+                //ListNewsCard(article, navController)
+                Card(colors = CardDefaults.cardColors(
+                    contentColor = Color.Black,
+                ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable {
+                            val articleJson = Uri.encode(Gson().toJson(article))
+                            navController.navigate("detail/$articleJson")
+                        },
+                    border = BorderStroke(2.dp, Color.Gray)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(article.title,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp)
+                        Text(article.description)
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ListNewsCard(article: News, navController: NavController) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                val articleJson = Uri.encode(Gson().toJson(article))
+                navController.navigate("detail/$articleJson")
+            },
+        border = BorderStroke(2.dp, Color.Gray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(article.title,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                fontSize = 16.sp)
+            Text(article.description,
+                color = Color.Black)
         }
     }
 }
@@ -107,13 +136,14 @@ fun NewsDetailScreen(article: News) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = article.title,
             fontWeight = FontWeight.Bold,
+            color = Color.White,
             fontSize = 20.sp)
         Divider(
             color = Color.Gray,
             thickness = 1.dp
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(article.description)
-        Spacer(modifier = Modifier.height(16.dp))
+        Text(article.content,
+            color = Color.White)
     }
 }
