@@ -83,7 +83,6 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
 
         LazyColumn {
             items(newsList.value) { article ->
-                //ListNewsCard(article, navController)
                 Card(colors = CardDefaults.cardColors(
                     contentColor = Color.Black,
                 ),
@@ -104,29 +103,6 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ListNewsCard(article: News, navController: NavController) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clickable {
-                val articleJson = Uri.encode(Gson().toJson(article))
-                navController.navigate("detail/$articleJson")
-            },
-        border = BorderStroke(2.dp, Color.Gray)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(article.title,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                fontSize = 16.sp)
-            Text(article.description,
-                color = Color.Black)
         }
     }
 }
