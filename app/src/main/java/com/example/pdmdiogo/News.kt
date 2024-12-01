@@ -1,6 +1,7 @@
 package com.example.pdmdiogo
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,11 +27,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-//import com.example.pdmdiogo.News.presentation.news_list.CoinListViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-//import com.example.pdmdiogo.News.domain.model.Coin
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -69,6 +68,7 @@ fun MainScreen() {
 @Composable
 fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
     val newsList = viewModel.news.collectAsState()
+    Log.d("ScreenTest", newsList.toString())
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = "Top News",
@@ -84,7 +84,7 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
         LazyColumn {
             items(newsList.value) { article ->
                 Card(colors = CardDefaults.cardColors(
-                    contentColor = Color.Black,
+                    contentColor = Color.Black
                 ),
                     modifier = Modifier
                         .fillMaxWidth()
