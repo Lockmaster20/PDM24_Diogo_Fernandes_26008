@@ -4,17 +4,17 @@ import com.example.pdmdiogo.News.domain.model.News
 
 data class NewsDto(
     val title: String,
-    val description: String?,
-    val content: String?
+    val abstract: String?,
+    val url: String?
 ) {
     fun toNews(): News {
         return News(
             title = title,
-            description = description ?: "No description." ,
-            content = content ?: "No content.")
+            description = abstract ?: "No description." ,
+            content = url ?: "No content.")
     }
 }
 
 data class NewsApiResponse(
-    val articles: List<NewsDto>
+    val results: List<NewsDto>
 )

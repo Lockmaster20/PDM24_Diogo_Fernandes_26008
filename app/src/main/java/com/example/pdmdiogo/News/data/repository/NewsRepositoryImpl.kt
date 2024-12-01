@@ -9,8 +9,8 @@ class NewsRepositoryImpl(private val api: NewsApi) : NewsRepository {
     override suspend fun getTopHeadlines(apiKey: String): List<News> {
         return try {
             val response = api.getTopHeadlines(apiKey = apiKey)
-            Log.d("GetTest0", response.articles.size.toString())
-            response.articles.map { it.toNews() }
+            Log.d("GetTest0", response.results.size.toString())
+            response.results.map { it.toNews() }
         } catch (e: Exception) {
             Log.e("GetTest1", e.toString())
             emptyList()

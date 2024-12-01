@@ -49,7 +49,8 @@ fun MainScreen() {
     val navController = rememberNavController()
     val newsListViewModel: NewsListViewModel = viewModel()
 
-    newsListViewModel.fetchNews(apiKey = "66af62a8906f4bbbbc4c2baeda1799c4")
+    //newsListViewModel.fetchNews(apiKey = "66af62a8906f4bbbbc4c2baeda1799c4")
+    newsListViewModel.fetchNews(apiKey = "W33amOD3AMI2gnXGdx5eGzg8B9XVQG6n")
 
     NavHost(navController = navController, startDestination = "list") {
         composable("list") {
@@ -71,7 +72,7 @@ fun NewsListScreen(navController: NavController,  viewModel: NewsListViewModel){
     Log.d("ScreenTest", newsList.toString())
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(text = "Top News",
+        Text(text = "Top Stories",
             fontWeight = FontWeight.Bold,
             color = Color.White,
             fontSize = 30.sp)
@@ -119,7 +120,8 @@ fun NewsDetailScreen(article: News) {
             thickness = 1.dp
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(article.content,
+        //Text(article.content,
+        Text(article.description,
             color = Color.White)
     }
 }
