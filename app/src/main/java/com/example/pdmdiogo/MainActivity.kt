@@ -25,12 +25,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             //First()   //Calculadora
             //MainScreen()  //Notícias
-            Login() //Firebase
+            //Login() //Firebase
+            AppNavigation()
         }
     }
 
 
-    fun registerUserWithFirebase(email:String, password:String) : Task<AuthResult> {
+    fun registerUserWithFirebase(email:String, password:String): Task<AuthResult> {
         return auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -51,8 +52,8 @@ class MainActivity : ComponentActivity() {
             }
     }
 
-    fun signInUserWithFirebase(email:String, password:String){
-        auth.signInWithEmailAndPassword(email, password)
+    fun signInUserWithFirebase(email:String, password:String): Task<AuthResult> {
+        return auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information

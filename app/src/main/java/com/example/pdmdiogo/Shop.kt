@@ -16,21 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
-/*
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "register") {
+    NavHost(navController = navController, startDestination = "login") {
         composable("register") { RegisterScreen(navController) }
         composable("login") { LoginScreen(navController) }
         composable("main") { MainScreen(navController) }
     }
 }
-*/
 
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -59,26 +60,19 @@ fun RegisterScreen(navController: NavController) {
                 navController.navigate("login") { }
             }
         }}) {
-            Text("Login")
-        }
-    }
-    Column {
-        // On successful registration
-        Button(onClick = { navController.navigate("login") }) {
-            Text("Go to Login")
+            Text("Register")
         }
     }
 }
 
 @Composable
-fun Login() {
+fun LoginScreen(navController: NavController) {
     val mainActivity = LocalContext.current as MainActivity
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     Column {
-
-        Text("Welcome")
+        Text("Login")
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = email,
@@ -92,9 +86,37 @@ fun Login() {
             label = { Text("Password") }
         )
         Spacer(modifier = Modifier.height(24.dp))
-        //Button(onClick = {mainActivity.signInUserWithFirebase(email, password)}) {
-        Button(onClick = {mainActivity.registerUserWithFirebase(email, password)}) {
+        Button(onClick = {mainActivity.signInUserWithFirebase(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    navController.navigate("main") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            }}) {
             Text("Login")
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(onClick = {
+                    navController.navigate("register") {}
+                }) {
+            Text("Register")
+        }
+    }
+}
+
+@Composable
+fun MainScreen(navController: NavController) {
+    val user = Firebase.auth.currentUser
+    Column {
+        Text("Teste, ${user?.email}")
+        Button(onClick = {
+            Firebase.auth.signOut()
+            navController.navigate("login") {
+                popUpTo("main") { inclusive = true }
+            }
+        }) {
+            Text("Logout")
         }
     }
 }
