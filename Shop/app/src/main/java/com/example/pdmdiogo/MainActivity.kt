@@ -8,6 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pdmdiogo.Calculator.First
+import com.example.pdmdiogo.Shop.domain.model.ShoppingList
+import com.example.pdmdiogo.Shop.domain.model.ShoppingListItem
 import com.example.pdmdiogo.Shop.domain.model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
@@ -55,14 +57,12 @@ class MainActivity : ComponentActivity() {
         return auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
                     Toast.makeText(
                         baseContext,
                         "Authentication Success",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    // If sign in fails, display a message to the user.
                     Toast.makeText(
                         baseContext,
                         "Authentication Failed",
@@ -86,18 +86,68 @@ class MainActivity : ComponentActivity() {
 
     fun getUserData(uid: String, onResult: (User?) -> Unit) {
         db.collection("users").document(uid).get()
-            .addOnSuccessListener { documentItems ->
-                if (documentItems.exists()) {
-                    val user = documentItems.toObject(User::class.java)
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val user = document.toObject(User::class.java)
                     onResult(user)
                 } else {
                     onResult(null)
                 }
             }
-            .addOnFailureListener { exception ->
-                exception.printStackTrace()
+            .addOnFailureListener {
                 onResult(null)
             }
+    }
+
+    fun createShoppingList(uid: String, name: String, onComplete: (Boolean) -> Unit) {
+        val listData = mapOf(
+            "ownerId" to uid,
+            "name" to name,
+            "isFinished" to false
+        )
+        db.collection("shopping_lists").add(listData)
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
+    }
+
+    // !!! Mudar para só carregar listas não terminadas?
+    fun getShoppingLists(uid: String, onResult: (List<ShoppingList>) -> Unit) {
+        db.collection("shopping_lists").whereEqualTo("ownerId", uid).get()
+            .addOnSuccessListener { result ->
+                val lists = result.documents.mapNotNull { it.toObject(ShoppingList::class.java)?.apply { id = it.id } }
+                onResult(lists)
+            }
+            .addOnFailureListener { onResult(emptyList()) }
+    }
+
+    fun getSharedShoppingLists(uid: String, onResult: (List<ShoppingList>) -> Unit) {
+        db.collection("shopping_lists").whereArrayContains("sharedWith", uid).get()
+            .addOnSuccessListener { result ->
+                val lists = result.documents.mapNotNull { it.toObject(ShoppingList::class.java)?.apply { id = it.id } }
+                onResult(lists)
+            }
+            .addOnFailureListener { onResult(emptyList()) }
+    }
+
+    fun finishShoppingList(listId: String, onComplete: (Boolean) -> Unit) {
+        db.collection("shopping_lists").document(listId).update("isFinished", true)
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
+    }
+
+    fun getShoppingListItems(listId: String, onResult: (List<ShoppingListItem>) -> Unit) {
+        db.collection("shopping_lists").document(listId).collection("items").get()
+            .addOnSuccessListener { result ->
+                val items = result.documents.mapNotNull { it.toObject(ShoppingListItem::class.java) }
+                onResult(items)
+            }
+            .addOnFailureListener { onResult(emptyList()) }
+    }
+
+    fun addShoppingListItem(listId: String, item: ShoppingListItem, onComplete: (Boolean) -> Unit) {
+        db.collection("shopping_lists").document(listId).collection("items").add(item)
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
     }
 }
 

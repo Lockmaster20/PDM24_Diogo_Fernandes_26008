@@ -18,9 +18,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.pdmdiogo.Shop.domain.model.ShoppingList
+import com.example.pdmdiogo.Shop.domain.model.ShoppingListItem
 import com.example.pdmdiogo.Shop.domain.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -28,11 +32,17 @@ import com.google.firebase.auth.auth
 @Composable
 fun Shop() {
     val navController = rememberNavController()
-
     NavHost(navController = navController, startDestination = "login") {
-        composable("register") { RegisterScreen(navController) }
         composable("login") { LoginScreen(navController) }
+        composable("register") { RegisterScreen(navController) }
         composable("main") { MainScreen(navController) }
+        composable("shared_lists") { SharedListsScreen(navController) }
+        composable("shopping_list/{listId}",
+            arguments = listOf(navArgument("listId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val listId = backStackEntry.arguments?.getString("listId") ?: ""
+            ShoppingListScreen(navController, listId)
+        }
     }
 }
 
@@ -83,10 +93,10 @@ fun RegisterScreen(navController: NavController) {
                                     }
                             }
                         }
-            }
-        } else {
+                    }
+            } else {
                 Toast.makeText(mainActivity.baseContext, "Missing Fields", Toast.LENGTH_SHORT).show()
-        }
+            }
         }) {
             Text("Register")
         }
@@ -126,8 +136,8 @@ fun LoginScreen(navController: NavController) {
         }
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = {
-                    navController.navigate("register") {}
-                }) {
+            navController.navigate("register") {}
+        }) {
             Text("Register")
         }
     }
@@ -137,31 +147,92 @@ fun LoginScreen(navController: NavController) {
 fun MainScreen(navController: NavController) {
     val mainActivity = LocalContext.current as MainActivity
     val user = Firebase.auth.currentUser
-    val userDataState = remember { mutableStateOf<User?>(null) }
+    val shoppingLists = remember { mutableStateOf<List<ShoppingList>>(emptyList()) }
 
     LaunchedEffect(user) {
         user?.let {
-            mainActivity.getUserData(it.uid) { userData ->
-                userDataState.value = userData
+            mainActivity.getShoppingLists(it.uid) { lists ->
+                shoppingLists.value = lists
             }
         }
     }
 
     Column {
-        val userData = userDataState.value
-        if (userData != null) {
-            Text("Welcome, ${userData.name}")
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                Firebase.auth.signOut()
-                navController.navigate("login") {
-                    popUpTo("main") { inclusive = true }
-                }
-            }) {
-                Text("Logout")
+        Text("Lists")
+        shoppingLists.value.forEach { list ->
+            Button(onClick = { navController.navigate("shopping_list/${list.id}") }) {
+                Text(list.name)
             }
-        } else {
-            Text("Loading user data...")
+        }
+        Button(onClick = { navController.navigate("shared_lists") }) {
+            Text("Shared Lists")
+        }
+        Button(onClick = {
+            Firebase.auth.signOut()
+            navController.navigate("login") { popUpTo("main") { inclusive = true } }
+        }) {
+            Text("Logout")
+        }
+    }
+}
+
+@Composable
+fun SharedListsScreen(navController: NavController) {
+    val mainActivity = LocalContext.current as MainActivity
+    val user = Firebase.auth.currentUser
+    val sharedLists = remember { mutableStateOf<List<ShoppingList>>(emptyList()) }
+
+    LaunchedEffect(user) {
+        user?.let {
+            mainActivity.getSharedShoppingLists(it.uid) { lists ->
+                sharedLists.value = lists
+            }
+        }
+    }
+
+    Column {
+        Text("Shared Lists")
+        sharedLists.value.forEach { list ->
+            Button(onClick = { navController.navigate("shopping_list/${list.id}") }) {
+                Text(list.name)
+            }
+        }
+        Button(onClick = { navController.popBackStack() }) {
+            Text("Back")
+        }
+    }
+}
+
+// !!! Verificar se é partilhada e limitar funcionalidades
+@Composable
+fun ShoppingListScreen(navController: NavController, listId: String) {
+    val mainActivity = LocalContext.current as MainActivity
+    val items = remember { mutableStateOf<List<ShoppingListItem>>(emptyList()) }
+
+    LaunchedEffect(listId) {
+        mainActivity.getShoppingListItems(listId) { listItems ->
+            items.value = listItems
+        }
+    }
+
+    Column {
+        Text("List")
+        items.value.forEach { item ->   // !!! Mostrar e fazer o check ao clicar no iem
+            Text("${item.name} x${item.quantity}")
+        }
+        Button(onClick = { }) { // !!! Fazer
+            Text("Add Item")
+        }
+        Button(onClick = { }) { // !!! Fazer
+            Text("Share List")
+        }
+        Button(onClick = {
+            mainActivity.finishShoppingList(listId) { } // !!! Ao terminar lista redirecionar
+        }) {
+            Text("Finish List")
+        }
+        Button(onClick = { navController.popBackStack() }) {
+            Text("Back")
         }
     }
 }
