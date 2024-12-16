@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "800311673384",
+    "project_id": "pdm-26008",
+    "storage_bucket": "pdm-26008.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:800311673384:android:1b1c2887080b258254ab1d",
+        "android_client_info": {
+          "package_name": "com.example.exmaquina"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFOOJkZredR_6uiq_TDRPSkmovuVlbUGY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

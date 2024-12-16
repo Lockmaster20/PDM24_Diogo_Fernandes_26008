@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.pdmdiogo.Calculator.First
 import com.example.pdmdiogo.Shop.domain.model.ShoppingList
 import com.example.pdmdiogo.Shop.domain.model.ShoppingListItem
 import com.example.pdmdiogo.Shop.domain.model.User
@@ -28,9 +26,7 @@ class MainActivity : ComponentActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         setContent {
-            //First()   //Calculadora
-            //MainScreen()  //Notícias
-            Shop() //Firebase
+            Shop()
         }
     }
 
@@ -154,5 +150,5 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun TestPreview() {
-    First()
+    //First()
 }
