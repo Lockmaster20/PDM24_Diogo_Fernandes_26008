@@ -2,6 +2,7 @@ package com.example.pdmdiogo
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -177,7 +182,7 @@ fun MainScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (hasActiveList) {
-                Button(onClick = { /* !!! Redirecionar para a página da lista */ }) {
+                Button(onClick = { navController.navigate("shopping_list/${activeShoppingList!!.id}/true") { } }) {
                     Text("Open List")
                 }
             } else {
@@ -202,7 +207,7 @@ fun MainScreen(navController: NavController) {
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { /* !!! Redirecionar para a página das listas partilhadas */ }) {
+            Button(onClick = { navController.navigate("shared_lists") { } }) {
                 Text("View Shared Lists")
             }
 
@@ -250,7 +255,7 @@ fun SharedListsScreen(navController: NavController) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Name: ${list.name}", fontSize = 24.sp)
                         Text("Owner Id: ${list.ownerId}")
-                        Button(onClick = { /* !!! Redirecionar para a página da lista */ }) {
+                        Button(onClick = { navController.navigate("shopping_list/${list.id}/false") { } }) {
                             Text("Open List")
                         }
                     }
@@ -283,12 +288,26 @@ fun ShoppingListScreen(navController: NavController, listId: String, isOwner: Bo
         }
 
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Text("Active List: ${list?.name}", fontSize = 24.sp)
+            Text(
+                text = "List: ${list?.name}",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                    style = TextStyle(
+                        shadow = Shadow(
+                            color = Color.Black,
+                            blurRadius = 5f,
+                            offset = Offset(2f, 2f)
+                        )
+                    )
+            )
+
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(listItems) { item ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(8.dp),
                         elevation = CardDefaults.cardElevation(
                             defaultElevation = 4.dp
                         ),
@@ -311,7 +330,7 @@ fun ShoppingListScreen(navController: NavController, listId: String, isOwner: Bo
                 }
             }
         }
-
+/*
         Column {
             Button(onClick = { }) { // !!! Fazer
                 Text("Add Item")
@@ -328,7 +347,7 @@ fun ShoppingListScreen(navController: NavController, listId: String, isOwner: Bo
             Button(onClick = { navController.popBackStack() }) {
                 Text("Back")
             }
-
         }
+*/
     }
 }

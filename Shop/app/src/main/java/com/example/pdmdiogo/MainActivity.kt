@@ -156,7 +156,7 @@ class MainActivity : ComponentActivity() {
             .get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
-                    val shoppingList = document.toObject(ShoppingList::class.java)
+                    val shoppingList = document.toObject(ShoppingList::class.java)?.apply { id = document.id }
                     onResult(shoppingList)
                 } else {
                     onResult(null)
@@ -176,7 +176,7 @@ class MainActivity : ComponentActivity() {
             .addOnSuccessListener { querySnapshot ->
                 if (!querySnapshot.isEmpty) {
                     val document = querySnapshot.documents.first()
-                    val shoppingList = document.toObject(ShoppingList::class.java)
+                    val shoppingList = document.toObject(ShoppingList::class.java)?.apply { id = document.id }
                     onResult(shoppingList)
                 } else {
                     Log.e("Firestore", "Erro lista não encontrada")
@@ -242,7 +242,8 @@ class MainActivity : ComponentActivity() {
                                             Product(
                                                 id = doc.id,
                                                 name = it.name,
-                                                description = it.description
+                                                description = it.description,
+                                                price = it.price
                                             )
                                         }
                                     }
@@ -256,7 +257,7 @@ class MainActivity : ComponentActivity() {
                             onResult(emptyList()) // Lista sem produtos
                         }
                     } else {
-                        onResult(emptyList()) // Lista nçao encontrada
+                        onResult(emptyList()) // Lista não encontrada
                     }
                 } else {
                     onResult(emptyList()) // Lista não encontrada

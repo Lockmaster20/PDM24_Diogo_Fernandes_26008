@@ -4,5 +4,5 @@ data class Product(
     var id: String = "",
     val name: String = "",
     val description: String = "",
-    val price: Number = 0
+    val price: Double = 0.0
 )
