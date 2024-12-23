@@ -1,19 +1,22 @@
 package com.example.pdmdiogo
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.pdmdiogo.Shop.domain.model.Product
 import com.example.pdmdiogo.Shop.domain.model.ShoppingList
-import com.example.pdmdiogo.Shop.domain.model.ShoppingListItem
 import com.example.pdmdiogo.Shop.domain.model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 
@@ -68,6 +71,7 @@ class MainActivity : ComponentActivity() {
             }
     }
 
+
     fun saveUserData(uid:String, name:String, email:String): Task<Boolean> {
         val userData = hashMapOf(
             "name" to name,
@@ -95,19 +99,49 @@ class MainActivity : ComponentActivity() {
             }
     }
 
-    fun createShoppingList(uid: String, name: String, onComplete: (Boolean) -> Unit) {
-        val listData = mapOf(
-            "ownerId" to uid,
-            "name" to name,
-            "isFinished" to false
+
+    fun createShoppingList(title: String, ownerId: String, onComplete: (Boolean) -> Unit) {
+        val shoppingList = hashMapOf(
+            "title" to title,
+            "isFinished" to false,
+            "ownerId" to ownerId
         )
-        db.collection("shopping_lists").add(listData)
-            .addOnSuccessListener { onComplete(true) }
-            .addOnFailureListener { onComplete(false) }
+
+        db.collection("shopping_lists")
+            .add(shoppingList)
+            .addOnSuccessListener {
+                onComplete(true)
+            }
+            .addOnFailureListener {
+                onComplete(false)
+            }
     }
 
-    // !!! Mudar para só carregar listas não terminadas?
-    fun getShoppingLists(uid: String, onResult: (List<ShoppingList>) -> Unit) {
+    fun addProductToList(listId: String, productId: String, onComplete: (Boolean) -> Unit) {
+        db.collection("shopping_lists")
+            .document(listId)
+            .update("items", FieldValue.arrayUnion(productId))
+            .addOnSuccessListener {
+                onComplete(true)
+            }
+            .addOnFailureListener {
+                onComplete(false)
+            }
+    }
+
+    fun shareList(listId: String, userId: String, onComplete: (Boolean) -> Unit) {
+        db.collection("shopping_lists")
+            .document(listId)
+            .update("sharedWith", FieldValue.arrayUnion(userId))
+            .addOnSuccessListener {
+                onComplete(true)
+            }
+            .addOnFailureListener {
+                onComplete(false)
+            }
+    }
+
+    fun getShoppingList(uid: String, onResult: (List<ShoppingList>) -> Unit) {
         db.collection("shopping_lists").whereEqualTo("ownerId", uid).get()
             .addOnSuccessListener { result ->
                 val lists = result.documents.mapNotNull { it.toObject(ShoppingList::class.java)?.apply { id = it.id } }
@@ -116,13 +150,70 @@ class MainActivity : ComponentActivity() {
             .addOnFailureListener { onResult(emptyList()) }
     }
 
+    fun getShoppingListById(listId: String, onResult: (ShoppingList?) -> Unit) {
+        db.collection("shopping_lists")
+            .document(listId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val shoppingList = document.toObject(ShoppingList::class.java)
+                    onResult(shoppingList)
+                } else {
+                    onResult(null)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Erro obter lista", exception)
+                onResult(null)
+            }
+    }
+
+    fun getActiveShoppingList(uid: String, onResult: (ShoppingList?) -> Unit) {
+        db.collection("shopping_lists")
+            .whereEqualTo("ownerId", uid)
+            .whereEqualTo("isFinished", false)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    val document = querySnapshot.documents.first()
+                    val shoppingList = document.toObject(ShoppingList::class.java)
+                    onResult(shoppingList)
+                } else {
+                    Log.e("Firestore", "Erro lista não encontrada")
+                    onResult(null)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Erro obter lista", exception)
+                onResult(null)
+            }
+    }
+
     fun getSharedShoppingLists(uid: String, onResult: (List<ShoppingList>) -> Unit) {
-        db.collection("shopping_lists").whereArrayContains("sharedWith", uid).get()
+        db.collection("shopping_lists")
+            .whereArrayContains("sharedWith", uid)
+            .whereEqualTo("isFinished", false)
+            .get()
             .addOnSuccessListener { result ->
                 val lists = result.documents.mapNotNull { it.toObject(ShoppingList::class.java)?.apply { id = it.id } }
                 onResult(lists)
             }
             .addOnFailureListener { onResult(emptyList()) }
+    }
+
+    fun hasActiveShoppingList(uid: String, onResult: (Boolean) -> Unit) {
+        db.collection("shopping_lists")
+            .whereEqualTo("ownerId", uid)
+            .whereEqualTo("isFinished", false)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                onResult(!querySnapshot.isEmpty)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Erro obter lista", exception)
+                onResult(false)
+            }
     }
 
     fun finishShoppingList(listId: String, onComplete: (Boolean) -> Unit) {
@@ -131,19 +222,81 @@ class MainActivity : ComponentActivity() {
             .addOnFailureListener { onComplete(false) }
     }
 
-    fun getShoppingListItems(listId: String, onResult: (List<ShoppingListItem>) -> Unit) {
-        db.collection("shopping_lists").document(listId).collection("items").get()
-            .addOnSuccessListener { result ->
-                val items = result.documents.mapNotNull { it.toObject(ShoppingListItem::class.java) }
-                onResult(items)
+    fun getShoppingListItems(listId: String, onResult: (List<Product>) -> Unit) {
+        db.collection("shopping_lists")
+            .document(listId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val shoppingList = document.toObject(ShoppingList::class.java)
+                    if (shoppingList != null) {
+                        val productIds = shoppingList.items
+                        if (productIds.isNotEmpty()) {
+                            db.collection("products")
+                                .whereIn(FieldPath.documentId(), productIds)
+                                .get()
+                                .addOnSuccessListener { results ->
+                                    val listItems = results.documents.mapNotNull { doc ->
+                                        val product = doc.toObject(Product::class.java)
+                                        product?.let {
+                                            Product(
+                                                id = doc.id,
+                                                name = it.name,
+                                                description = it.description
+                                            )
+                                        }
+                                    }
+                                    onResult(listItems)
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e("Firestore", "Erro a obter produtos", exception)
+                                    onResult(emptyList())
+                                }
+                        } else {
+                            onResult(emptyList()) // Lista sem produtos
+                        }
+                    } else {
+                        onResult(emptyList()) // Lista nçao encontrada
+                    }
+                } else {
+                    onResult(emptyList()) // Lista não encontrada
+                }
             }
-            .addOnFailureListener { onResult(emptyList()) }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Erro a obter lista", exception)
+                onResult(emptyList())
+            }
     }
 
-    fun addShoppingListItem(listId: String, item: ShoppingListItem, onComplete: (Boolean) -> Unit) {
-        db.collection("shopping_lists").document(listId).collection("items").add(item)
-            .addOnSuccessListener { onComplete(true) }
-            .addOnFailureListener { onComplete(false) }
+    fun getProducts(onResult: (List<Product>) -> Unit) {
+        db.collection("products")
+            .get()
+            .addOnSuccessListener { result ->
+                if (!result.isEmpty) {
+                    val products = result.documents.mapNotNull { it.toObject(Product::class.java)?.apply { id = it.id } }
+                    onResult(products)
+                } else {
+                    Log.e("Firestore", "Erro produtos não encontrados")
+                    onResult(emptyList())
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Erro obter a produtos", exception)
+                onResult(emptyList())
+            }
+    }
+
+    fun removeItemFromList(listId: String, productId: String, onResult: (Boolean) -> Unit){
+        db.collection("shopping_lists")
+            .document(listId)
+            .update("items", FieldValue.arrayRemove(productId))
+            .addOnSuccessListener {
+                onResult(true)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Erro a remover o produto da lista", exception)
+                onResult(false)
+            }
     }
 }
 
