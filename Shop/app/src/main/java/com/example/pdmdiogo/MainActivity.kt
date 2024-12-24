@@ -99,10 +99,28 @@ class MainActivity : ComponentActivity() {
             }
     }
 
+    fun getUsers(onResult: (List<User>) -> Unit) {
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                if (!result.isEmpty) {
+                    val users = result.documents.mapNotNull { it.toObject(User::class.java)?.apply { id = it.id } }
+                    onResult(users)
+                } else {
+                    Log.e("Firestore", "Erro utilizadores não encontrados")
+                    onResult(emptyList())
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Erro obter os utilizadores", exception)
+                onResult(emptyList())
+            }
+    }
 
-    fun createShoppingList(title: String, ownerId: String, onComplete: (Boolean) -> Unit) {
+
+    fun createShoppingList(name: String, ownerId: String, onComplete: (Boolean) -> Unit) {
         val shoppingList = hashMapOf(
-            "title" to title,
+            "name" to name,
             "isFinished" to false,
             "ownerId" to ownerId
         )
@@ -282,7 +300,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             .addOnFailureListener { exception ->
-                Log.e("Firestore", "Erro obter a produtos", exception)
+                Log.e("Firestore", "Erro obter os produtos", exception)
                 onResult(emptyList())
             }
     }
