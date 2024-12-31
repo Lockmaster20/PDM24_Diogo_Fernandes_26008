@@ -122,12 +122,10 @@ fun ShoppingListScreen(navController: NavController, listId: String, isOwner: Bo
                                 Text(item.name, fontSize = 24.sp)
                                 Text(item.description)
                                 Text("Price: ${item.price}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                                if (isOwner) {
-                                    Button(onClick = {
-                                        shoppingListViewModel.removeItemFromList(listId, item.id)
-                                    }) {
-                                        Text("Remove")
-                                    }
+                                Button(onClick = {
+                                    shoppingListViewModel.removeItemFromList(listId, item.id)
+                                }) {
+                                    Text("Remove")
                                 }
                             }
                         }
